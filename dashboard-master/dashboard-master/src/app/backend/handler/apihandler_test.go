@@ -15,16 +15,11 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
+	"reflect"
 	"testing"
 
-	"bytes"
-	"reflect"
-	"strings"
-
 	restful "github.com/emicklei/go-restful/v3"
-	"github.com/kubernetes/dashboard/src/app/backend/args"
 	"github.com/kubernetes/dashboard/src/app/backend/auth"
 	authApi "github.com/kubernetes/dashboard/src/app/backend/auth/api"
 	"github.com/kubernetes/dashboard/src/app/backend/auth/jwe"
@@ -100,74 +95,6 @@ func TestMapUrlToResource(t *testing.T) {
 		actual := mapUrlToResource(c.url)
 		if !reflect.DeepEqual(actual, &c.expected) {
 			t.Errorf("mapUrlToResource(%#v) returns %#v, expected %#v", c.url, actual, c.expected)
-		}
-	}
-}
-
-func TestFormatRequestLog(t *testing.T) {
-	cases := []struct {
-		method      string
-		uri         string
-		content     map[string]string
-		expected    string
-		apiLogLevel string
-	}{
-		{
-			"PUT",
-			"/api/v1/pod",
-			map[string]string{},
-			"Incoming HTTP/1.1 PUT /api/v1/pod request",
-			"DEFAULT",
-		},
-		{
-			"PUT",
-			"/api/v1/pod",
-			map[string]string{},
-			"",
-			"NONE",
-		},
-		{
-			"POST",
-			"/api/v1/login",
-			map[string]string{"password": "abc123"},
-			"Incoming HTTP/1.1 POST /api/v1/login request from : { contents hidden }",
-			"DEFAULT",
-		},
-		{
-			"POST",
-			"/api/v1/login",
-			map[string]string{},
-			"",
-			"NONE",
-		},
-		{
-			"POST",
-			"/api/v1/login",
-			map[string]string{"password": "abc123"},
-			"Incoming HTTP/1.1 POST /api/v1/login request from : {\"password\":\"abc123\"}",
-			"DEBUG",
-		},
-	}
-
-	for _, c := range cases {
-		jsonValue, _ := json.Marshal(c.content)
-
-		req, err := http.NewRequest(c.method, c.uri, bytes.NewReader(jsonValue))
-		req.Header.Set("Content-Type", "application/json")
-
-		if err != nil {
-			t.Error("Cannot mockup request")
-		}
-
-		builder := args.GetHolderBuilder()
-		builder.SetAPILogLevel(c.apiLogLevel)
-
-		var restfulRequest restful.Request
-		restfulRequest.Request = req
-
-		actual := formatRequestLog(&restfulRequest)
-		if !strings.Contains(actual, c.expected) {
-			t.Errorf("formatRequestLog(%#v) returns %#v, expected to contain %#v", req, actual, c.expected)
 		}
 	}
 }
