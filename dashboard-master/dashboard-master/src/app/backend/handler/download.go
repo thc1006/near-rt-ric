@@ -22,11 +22,11 @@ import (
 	"github.com/kubernetes/dashboard/src/app/backend/errors"
 )
 
-func handleDownload(response *restful.Response, result io.ReadCloser) {
+func handleDownload(response *restful.Response, request *restful.Request, result io.ReadCloser) {
 	response.AddHeader(restful.HEADER_ContentType, "text/plain")
 	defer result.Close()
 	_, err := io.Copy(response, result)
 	if err != nil {
-		errors.HandleInternalError(response, err)
+		errors.HandleInternalError(response, request, err)
 	}
 }
