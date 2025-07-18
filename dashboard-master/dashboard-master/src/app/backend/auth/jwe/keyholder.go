@@ -17,9 +17,9 @@ package jwe
 import (
 	"crypto/rand"
 	"crypto/rsa"
-	"log"
 	"sync"
 
+	"github.com/sirupsen/logrus"
 	jose "gopkg.in/square/go-jose.v2"
 	v1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -108,7 +108,7 @@ func (self *rsaKeyHolder) update(obj runtime.Object) {
 // gets deleted. It is then recreated based on local key.
 func (self *rsaKeyHolder) recreate(obj runtime.Object) {
 	secret := obj.(*v1.Secret)
-	log.Printf("Synchronized secret %s has been deleted. Recreating.", secret.Name)
+	logrus.WithField("secret", secret.Name).Info("Synchronized secret has been deleted. Recreating.")
 	if err := self.synchronizer.Create(self.getEncryptionKeyHolder()); err != nil {
 		panic(err)
 	}
@@ -123,13 +123,13 @@ func (self *rsaKeyHolder) init() {
 
 	// Try to init key from synchronized object
 	if obj := self.synchronizer.Get(); obj != nil {
-		log.Print("Initializing JWE encryption key from synchronized object")
+		logrus.Info("Initializing JWE encryption key from synchronized object")
 		self.update(obj)
 		return
 	}
 
 	// Try to save generated key in a secret
-	log.Printf("Storing encryption key in a secret")
+	logrus.Info("Storing encryption key in a secret")
 	err := self.synchronizer.Create(self.getEncryptionKeyHolder())
 	if err != nil && !errors.IsAlreadyExists(err) {
 		panic(err)
@@ -153,7 +153,7 @@ func (self *rsaKeyHolder) getEncryptionKeyHolder() runtime.Object {
 
 // Generates encryption key used to encrypt token payload.
 func (self *rsaKeyHolder) initEncryptionKey() {
-	log.Print("Generating JWE encryption key")
+	logrus.Info("Generating JWE encryption key")
 	self.mux.Lock()
 	defer self.mux.Unlock()
 
