@@ -2,6 +2,7 @@
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
+// You may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
@@ -66,7 +67,7 @@ func NewPluginHandler(cManager clientapi.ClientManager) *Handler {
 func (h *Handler) handlePluginList(request *restful.Request, response *restful.Response) {
 	pluginClient, err := h.cManager.PluginClient(request)
 	if err != nil {
-		errors.HandleInternalError(response, err)
+		errors.HandleInternalError(response, request, err)
 		return
 	}
 	namespace := request.PathParameter("namespace")
@@ -74,7 +75,7 @@ func (h *Handler) handlePluginList(request *restful.Request, response *restful.R
 
 	result, err := GetPluginList(pluginClient, namespace, dataSelect)
 	if err != nil {
-		errors.HandleInternalError(response, err)
+		errors.HandleInternalError(response, request, err)
 		return
 	}
 	response.WriteHeaderAndEntity(http.StatusOK, result)
@@ -92,7 +93,7 @@ func (h *Handler) servePluginSource(request *restful.Request, response *restful.
 
 	result, err := GetPluginSource(pluginClient, k8sClient, namespace, name)
 	if err != nil {
-		errors.HandleInternalError(response, err)
+		errors.HandleInternalError(response, request, err)
 		return
 	}
 	response.AddHeader(contentTypeHeader, jsContentType)
