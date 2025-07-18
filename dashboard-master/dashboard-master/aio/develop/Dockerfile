@@ -20,34 +20,30 @@
 # Specify version to clarify which version we use.
 FROM golang:1.17.0-bullseye
 
-# Install Node.js. Go is already installed.
-# A small tweak, apt-get update is already run by the nodejs setup script,
-# so there's no need to run it again.
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
-	&& apt-get install -y --no-install-recommends \
-	nodejs \
-	patch \
-	chromium \
-	bc \
-	sudo \
-	git \
-	gosu \
-	nano \
-	less \
-	xvfb \
-	libgtk-3-0 \
-	libgconf-2-4 \
-	bzip2 \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& apt-get clean
+# Install Node.js, Go, and other tools.
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y --no-install-recommends \
+    nodejs \
+    patch \
+    chromium \
+    bc \
+    sudo \
+    git \
+    gosu \
+    xvfb \
+    libgtk-3-0 \
+    libgconf-2-4 \
+    bzip2 && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
 
 ENV GIT_EDITOR=nano
 
-# Install firefox from Mozilla binaries
-RUN mkdir -p /usr/local/lib/firefox
-RUN wget "https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=en-US" -O /tmp/firefox.tar.bz2
-RUN tar -xjf /tmp/firefox.tar.bz2 -C /usr/local/lib
-RUN ln -s /usr/local/lib/firefox/firefox /usr/local/bin/firefox
+# Install Firefox from Mozilla binaries
+RUN wget "https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=en-US" -O /tmp/firefox.tar.bz2 && \
+    tar -xjf /tmp/firefox.tar.bz2 -C /usr/local/lib && \
+    ln -s /usr/local/lib/firefox/firefox /usr/local/bin/firefox && \
+    rm /tmp/firefox.tar.bz2
 
 # Set environment variable for JavaScript tests.
 ENV CHROME_BIN=/usr/bin/chromium
@@ -75,9 +71,9 @@ RUN curl -sSL https://download.docker.com/linux/static/stable/x86_64/docker-18.0
 	chmod +x /usr/bin/docker
 
 # Install kubectl
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-RUN chmod +x ./kubectl
-RUN mv ./kubectl /usr/local/bin/kubectl
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && \
+    chmod +x ./kubectl && \
+    mv ./kubectl /usr/local/bin/kubectl
 
 # Install golangci for ckecking or fixing go format.
 # `npm ci` installs golangci, but this installation is needed
