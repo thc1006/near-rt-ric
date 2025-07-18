@@ -92,18 +92,18 @@ func (self *SettingsHandler) handleSettingsGlobalGet(request *restful.Request, r
 func (self *SettingsHandler) handleSettingsGlobalSave(request *restful.Request, response *restful.Response) {
 	settings := new(api.Settings)
 	if err := request.ReadEntity(settings); err != nil {
-		errors.HandleInternalError(response, err)
+		errors.HandleInternalError(response, request, err)
 		return
 	}
 
 	client, err := self.clientManager.Client(request)
 	if err != nil {
-		errors.HandleInternalError(response, err)
+		errors.HandleInternalError(response, request, err)
 		return
 	}
 
 	if err := self.manager.SaveGlobalSettings(client, settings); err != nil {
-		errors.HandleInternalError(response, err)
+		errors.HandleInternalError(response, request, err)
 		return
 	}
 	response.WriteHeaderAndEntity(http.StatusCreated, settings)
@@ -118,18 +118,18 @@ func (self *SettingsHandler) handleSettingsGetPinned(request *restful.Request, r
 func (self *SettingsHandler) handleSettingsSavePinned(request *restful.Request, response *restful.Response) {
 	pinnedResource := new(api.PinnedResource)
 	if err := request.ReadEntity(pinnedResource); err != nil {
-		errors.HandleInternalError(response, err)
+		errors.HandleInternalError(response, request, err)
 		return
 	}
 
 	client, err := self.clientManager.Client(request)
 	if err != nil {
-		errors.HandleInternalError(response, err)
+		errors.HandleInternalError(response, request, err)
 		return
 	}
 
 	if err := self.manager.SavePinnedResource(client, pinnedResource); err != nil {
-		errors.HandleInternalError(response, err)
+		errors.HandleInternalError(response, request, err)
 		return
 	}
 	response.WriteHeaderAndEntity(http.StatusCreated, pinnedResource)
@@ -144,12 +144,12 @@ func (self *SettingsHandler) handleSettingsDeletePinned(request *restful.Request
 
 	client, err := self.clientManager.Client(request)
 	if err != nil {
-		errors.HandleInternalError(response, err)
+		errors.HandleInternalError(response, request, err)
 		return
 	}
 
 	if err := self.manager.DeletePinnedResource(client, pinnedResource); err != nil {
-		errors.HandleInternalError(response, err)
+		errors.HandleInternalError(response, request, err)
 		return
 	}
 	response.WriteHeader(http.StatusNoContent)
