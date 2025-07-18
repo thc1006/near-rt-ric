@@ -16,14 +16,13 @@ package handler
 
 import (
 	"bytes"
-	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/emicklei/go-restful/v3"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/xsrftoken"
 	utilnet "k8s.io/apimachinery/pkg/util/net"
 
@@ -61,64 +60,54 @@ func restrictedResourcesFilter(request *restful.Request, response *restful.Respo
 // web-service filter function used for request and response logging.
 func requestAndResponseLogger(request *restful.Request, response *restful.Response,
 	chain *restful.FilterChain) {
-	if args.Holder.GetAPILogLevel() != "NONE" {
-		log.Printf(formatRequestLog(request))
+	if level, err := logrus.ParseLevel(strings.ToLower(args.Holder.GetAPILogLevel())); err == nil {
+		logrus.SetLevel(level)
 	}
+
+	entry := logrus.WithFields(logrus.Fields{
+		"proto":       request.Request.Proto,
+		"method":      request.Request.Method,
+		"remote_addr": getRemoteAddr(request.Request),
+	})
+
+	if request.Request.URL != nil {
+		entry = entry.WithField("uri", request.Request.URL.RequestURI())
+	}
+
+	if request.Request.Body != nil {
+		byteArr, err := io.ReadAll(request.Request.Body)
+		if err == nil {
+			// Restore request body so we can read it again in regular request handlers
+			request.Request.Body = io.NopCloser(bytes.NewReader(byteArr))
+
+			content := string(byteArr)
+			if checkSensitiveURL(request.Request.URL.RequestURI()) {
+				content = "{ contents hidden }"
+			}
+
+			entry = entry.WithField("body", content)
+		}
+	}
+
+	entry.Info("Incoming request")
 
 	chain.ProcessFilter(request, response)
 
-	if args.Holder.GetAPILogLevel() != "NONE" {
-		log.Printf(formatResponseLog(response, request))
-	}
+	entry.WithFields(logrus.Fields{
+		"status_code": response.StatusCode(),
+	}).Info("Outgoing response")
 }
 
-// formatRequestLog formats request log string.
-func formatRequestLog(request *restful.Request) string {
-	uri := ""
-	content := "{}"
-
-	if request.Request.URL != nil {
-		uri = request.Request.URL.RequestURI()
-	}
-
-	byteArr, err := io.ReadAll(request.Request.Body)
-	if err == nil {
-		content = string(byteArr)
-	}
-
-	// Restore request body so we can read it again in regular request handlers
-	request.Request.Body = io.NopCloser(bytes.NewReader(byteArr))
-
-	// Is DEBUG level logging enabled? Yes?
-	// Great now let's filter out any content from sensitive URLs
-	if args.Holder.GetAPILogLevel() != "DEBUG" && checkSensitiveURL(&uri) {
-		content = "{ contents hidden }"
-	}
-
-	return fmt.Sprintf(RequestLogString, time.Now().Format(time.RFC3339), request.Request.Proto,
-		request.Request.Method, uri, getRemoteAddr(request.Request), content)
-}
-
-// formatResponseLog formats response log string.
-func formatResponseLog(response *restful.Response, request *restful.Request) string {
-	return fmt.Sprintf(ResponseLogString, time.Now().Format(time.RFC3339),
-		getRemoteAddr(request.Request), response.StatusCode())
-}
-
-// checkSensitiveUrl checks if a string matches against a sensitive URL
+// checkSensitiveURL checks if a string matches against a sensitive URL
 // true if sensitive. false if not.
-func checkSensitiveURL(url *string) bool {
-	var s struct{}
-	var sensitiveUrls = make(map[string]struct{})
-	sensitiveUrls["/api/v1/login"] = s
-	sensitiveUrls["/api/v1/csrftoken/login"] = s
-	sensitiveUrls["/api/v1/token/refresh"] = s
-
-	if _, ok := sensitiveUrls[*url]; ok {
-		return true
+func checkSensitiveURL(url string) bool {
+	sensitiveURLs := []string{"/api/v1/login", "/api/v1/csrftoken/login", "/api/v1/token/refresh"}
+	for _, sensitiveURL := range sensitiveURLs {
+		if strings.HasPrefix(url, sensitiveURL) {
+			return true
+		}
 	}
 	return false
-
 }
 
 func metricsFilter(req *restful.Request, resp *restful.Response,
@@ -147,7 +136,7 @@ func validateXSRFFilter(csrfKey string) restful.FilterFunction {
 			!xsrftoken.Valid(req.HeaderParameter("X-CSRF-TOKEN"), csrfKey, "none",
 				*resource)) {
 			err := errors.NewInvalid("CSRF validation failed")
-			log.Print(err)
+			logrus.Error(err)
 			resp.AddHeader("Content-Type", "text/plain")
 			resp.WriteErrorString(http.StatusUnauthorized, err.Error()+"\n")
 			return
