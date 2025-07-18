@@ -15,10 +15,10 @@
 package errors
 
 import (
-	"log"
 	"net/http"
 
 	restful "github.com/emicklei/go-restful/v3"
+	"github.com/sirupsen/logrus"
 	"k8s.io/apimachinery/pkg/api/errors"
 )
 
@@ -42,7 +42,7 @@ func AppendError(err error, nonCriticalErrors []error) ([]error, error) {
 		if isErrorCritical(err) {
 			return nonCriticalErrors, LocalizeError(err)
 		}
-		log.Printf("Non-critical error occurred during resource retrieval: %s", err)
+		logrus.Warnf("Non-critical error occurred during resource retrieval: %s", err)
 		nonCriticalErrors = appendMissing(nonCriticalErrors, LocalizeError(err))
 	}
 	return nonCriticalErrors, nil
@@ -122,12 +122,18 @@ func IsTokenExpiredError(err error) bool {
 }
 
 // HandleInternalError writes the given error to the response and sets appropriate HTTP status headers.
-func HandleInternalError(response *restful.Response, err error) {
+func HandleInternalError(response *restful.Response, r *restful.Request, err error) {
 	statusCode := http.StatusInternalServerError
 	statusError, ok := err.(*errors.StatusError)
 	if ok && statusError.Status().Code > 0 {
 		statusCode = int(statusError.Status().Code)
 	}
+
+	entry := logrus.WithFields(logrus.Fields{
+		"request": r.Request.URL.String(),
+	})
+
+	entry.Errorf("internal error: %v", err)
 	response.AddHeader("Content-Type", "text/plain")
 	response.WriteErrorString(statusCode, err.Error()+"\n")
 }
