@@ -17,14 +17,13 @@
 
 ARG BUILDPLATFORM
 
-FROM --platform=$BUILDPLATFORM ubuntu:20.04 as builder
+FROM --platform=$BUILDPLATFORM busybox:1.35 as builder
 
 # Create a nonroot user for final image
-RUN useradd -u 10001 nonroot
+RUN adduser -D -u 10001 nonroot
 
-# Scratch can be used as the base image because the backend is compiled to include all
-# its dependencies.
-FROM --platform=$BUILDPLATFORM scratch as final
+# Use a distroless image as the base for the final image.
+FROM gcr.io/distroless/static-debian11 as final
 
 # Add all files from current working directory to the root of the image, i.e., copy dist directory
 # layout to the root directory.
@@ -36,4 +35,8 @@ USER nonroot
 
 # The port that the application listens on.
 EXPOSE 9090 8443
+
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl --insecure https://localhost:8443/ || exit 1
+
 ENTRYPOINT ["/dashboard", "--insecure-bind-address=0.0.0.0", "--bind-address=0.0.0.0"]
