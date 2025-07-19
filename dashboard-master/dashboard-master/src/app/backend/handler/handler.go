@@ -38,7 +38,7 @@ type ApiHandler struct {
 }
 
 // CreateHTTPAPIHandler creates a new HTTP handler that handles all requests to the API of the backend.
-func CreateHTTPAPIHandler(iManager client.ClientManager, aManager auth.AuthManager, sManager settings.SettingsManager, sbManager systembanner.SystemBannerManager) (http.Handler, error) {
+func CreateHTTPAPIHandler(iManager client.ClientManager, aManager auth.AuthManager, sManager settings.SettingsManager, sbManager systembanner.SystemBannerManager, flApi *federatedlearning.API) (http.Handler, error) {
 	apiHandler := ApiHandler{
 		cManager:    iManager,
 		authManager: aManager,
@@ -57,6 +57,8 @@ func CreateHTTPAPIHandler(iManager client.ClientManager, aManager auth.AuthManag
 		Consumes(restful.MIME_JSON).
 		Produces(restful.MIME_JSON)
 	wsContainer.Add(apiV1Ws)
+
+	flApi.RegisterRoutes(apiV1Ws)
 
 	apiHandler.apiWebService = apiV1Ws
 

@@ -113,6 +113,9 @@ func main() {
 	// Init integrations
 	integrationManager := integration.NewIntegrationManager(clientManager)
 
+	// Init federated learning
+	flApi := initFederatedLearning()
+
 	switch metricsProvider := args.Holder.GetMetricsProvider(); metricsProvider {
 	case "sidecar":
 		integrationManager.Metric().ConfigureSidecar(args.Holder.GetSidecarHost()).
@@ -134,7 +137,8 @@ func main() {
 		clientManager,
 		authManager,
 		settingsManager,
-		systemBannerManager)
+		systemBannerManager,
+		flApi)
 	if err != nil {
 		handleFatalInitError(err)
 	}
@@ -185,6 +189,12 @@ func main() {
 		go func() { log.Fatal(http.ListenAndServe(addr, nil)) }()
 	}
 	select {}
+}
+
+func initFederatedLearning() *federatedlearning.API {
+	coordinator := federatedlearning.NewCoordinator()
+	api := federatedlearning.NewAPI(coordinator)
+	return api
 }
 
 func initAuthManager(clientManager clientapi.ClientManager) authApi.AuthManager {
