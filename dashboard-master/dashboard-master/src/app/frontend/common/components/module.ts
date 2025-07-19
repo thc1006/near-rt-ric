@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {ScrollingModule} from '@angular/cdk/scrolling';
 import {NgModule} from '@angular/core';
 import {MatTableModule} from '@angular/material/table';
 
@@ -199,7 +200,7 @@ const components = [
 ];
 
 @NgModule({
-  imports: [SharedModule, DirectivesModule, MatTableModule, MatTableModule],
+  imports: [SharedModule, DirectivesModule, MatTableModule, MatTableModule, ScrollingModule],
   declarations: [...components],
   exports: [...components],
   entryComponents: [ChipDialog, RowDetailComponent, MenuComponent, NamespaceChangeDialog],
