@@ -1,426 +1,223 @@
-# Near-RT RIC Platform Configuration
+# AGENTS Configuration for O-RAN Near RT RIC xApp Deployment Project
+
+This repository contains a comprehensive O-RAN (Open Radio Access Network) Near Real-Time RAN Intelligent Controller (Near-RT RIC) platform designed for xApp deployment and management. This AGENTS.md file provides essential context for AI coding assistants to understand the project structure and work effectively within this telecommunications domain.
 
 ## Project Overview
 
-**Near-RT RIC (Near Real-Time RAN Intelligent Controller)** - A comprehensive O-RAN compliant platform implementing intelligent RAN optimization through network slicing, federated learning, and multi-functional xApps. This project combines Go backend services (40.3%) with Angular frontend applications (30%) to deliver production-ready O-RAN solutions.
+**Project Name:** near-rt-ric  
+**Domain:** O-RAN 5G/LTE Telecommunications  
+**Purpose:** Near Real-Time RAN Intelligent Controller for xApp deployment  
+**Architecture:** Cloud-native, Kubernetes-based platform  
+**Response Time Requirements:** 10ms - 1s (Near Real-Time)  
+**Languages:** Go (42.0%), TypeScript (29.1%), HTML (16.9%), CSS (6.8%), SCSS (3.2%), Shell (0.9%)
 
-### Architecture Context
-- **Near-RT RIC Platform**: Handles near-real-time RAN control and optimization (10ms-1s latency requirements)
-- **xApp Ecosystem**: Hosts applications providing specific RAN management functions via E2 interface
-- **Federated Learning Integration**: Implements privacy-preserving ML models for intelligent RRM
-- **Network Slicing**: Advanced capabilities with dynamic slice creation and SLA monitoring
-- **Multi-vendor Support**: Compatible with different RAN vendor implementations
+## Architecture Components
 
-## Technology Stack & Language Preferences
+### 1. dashboard-master/dashboard-master
+- **Technology Stack:** Kubernetes Dashboard (Modified)
+- **Backend:** Go-based API server with Gemini integration
+- **Frontend:** Angular-based web UI 
+- **Purpose:** Management interface for Near-RT RIC platform
+- **Key Components:**
+  - Go backend server (`src/app/backend/dashboard.go`)
+  - Angular frontend (`src/app/frontend/`)
+  - Kubernetes integration APIs
+  - RBAC authentication system
+  - Metrics and monitoring interfaces
 
-### Backend (Go - 40.3%)
-- **Primary Language**: Go 1.21+
-- **Framework**: Standard library with net/http, gorilla/mux for routing
-- **Concurrency**: Use Go channels and goroutines for high-throughput scenarios
-- **Error Handling**: Always implement proper error handling with context.Context
-- **Logging**: Use structured logging (logrus or zap) with appropriate log levels
-- **Testing**: Use testify framework with gomock for mocking
+### 2. xAPP_dashboard-master  
+- **Technology Stack:** Angular 13.3.x
+- **Purpose:** Specialized dashboard for xApp lifecycle management
+- **Components:**
+  - Front-page component (landing interface)
+  - Home component (main dashboard)
+  - Tags component (xApp categorization)
+  - Image history component (container management)
+  - Service layer for API communication
 
-### Frontend (Angular/TypeScript - 30%)
-- **Framework**: Angular 17+ with standalone components
-- **Language**: TypeScript with strict mode enabled
-- **UI Library**: Angular Material + CDK for consistent components
-- **State Management**: Use NgRx for complex state, signals for simple state
-- **Testing**: Jest for unit tests, Cypress for e2e tests
-- **Styling**: SCSS with consistent design system
+## O-RAN Domain Knowledge
 
-### Infrastructure
-- **Containerization**: Docker with multi-stage builds
-- **Orchestration**: Kubernetes with proper RBAC and network policies
-- **Message Routing**: RMR (RIC Message Router) for xApp communication
-- **Database**: Support for time-series data (InfluxDB) and relational (PostgreSQL)
+### Key Concepts
+- **Near-RT RIC:** Near Real-Time RAN Intelligent Controller
+- **xApp:** Extended Applications running on Near-RT RIC
+- **E2 Interface:** Communication protocol between RIC and RAN nodes
+- **A1 Interface:** Communication between Non-RT RIC and Near-RT RIC
+- **O1 Interface:** Management interface for FCAPS operations
 
-## Code Style & Standards
+### Technical Specifications
+- **Latency Requirements:** 10ms to 1 second response time
+- **Scalability:** Support for hundreds to thousands of network sites
+- **Standards Compliance:** O-RAN Alliance specifications
+- **Container Platform:** Kubernetes orchestration
+- **Communication Protocols:** E2AP, A1 Policy, O1 Management
 
-### Go Code Standards
+## Development Guidelines
+
+### Code Organization
 ```
-// Use structured logging with context
-log.WithFields(logrus.Fields{
-    "xapp_id": xappID,
-    "subscription_id": subID,
-}).Info("Processing E2 subscription request")
-
-// Error handling with context
-if err := processE2Message(ctx, msg); err != nil {
-    return fmt.Errorf("failed to process E2 message: %w", err)
-}
-
-// Interface definitions for xApp communication
-type XAppManager interface {
-    RegisterXApp(ctx context.Context, xapp *XAppConfig) error
-    DeregisterXApp(ctx context.Context, xappID string) error
-    RouteMessage(ctx context.Context, msg *E2Message) error
-}
-```
-
-### TypeScript/Angular Standards
-```
-// Use strict typing with proper interfaces
-interface E2NodeStatus {
-  nodeId: string;
-  status: 'connected' | 'disconnected' | 'error';
-  lastHeartbeat: Date;
-  cellInfo: CellConfiguration[];
-}
-
-// Component with proper lifecycle management
-@Component({
-  selector: 'app-e2-node-monitor',
-  standalone: true,
-  imports: [CommonModule, MatTableModule]
-})
-export class E2NodeMonitorComponent implements OnInit, OnDestroy {
-  // Use signals for reactive state
-  nodeStatus = signal([]);
-}
+├── dashboard-master/dashboard-master/    # Kubernetes Dashboard (Modified)
+│   ├── src/app/backend/                 # Go backend services
+│   ├── src/app/frontend/                # Angular frontend
+│   ├── aio/                            # Deployment configurations
+│   ├── docs/                           # Documentation
+│   └── i18n/                           # Internationalization
+├── xAPP_dashboard-master/              # xApp Management Dashboard
+│   ├── src/app/                        # Angular application
+│   │   ├── front-page/                 # Landing page
+│   │   ├── home/                       # Main dashboard
+│   │   ├── tags/                       # xApp categorization
+│   │   └── imagehistory/               # Container lifecycle
+│   └── Dockerfile                      # Container build
+└── README.md                          # Project documentation
 ```
 
-### Naming Conventions
-- **Go**: CamelCase for exported functions, camelCase for internal
-- **TypeScript**: camelCase for variables and functions, PascalCase for types/interfaces
-- **Files**: kebab-case for component files, snake_case for Go packages
-- **Constants**: UPPER_SNAKE_CASE for both languages
-- **O-RAN Terminology**: Use standard O-RAN terms (xApp, E2Node, RIC, etc.)
+### Coding Standards
+- **Go Code:** Follow Go best practices, use dependency injection
+- **TypeScript/Angular:** Strict mode, reactive forms, proper typing
+- **Docker:** Multi-stage builds, minimal base images
+- **Kubernetes:** Helm charts, resource limits, health checks
 
-## Build & Development Commands
+### Testing Requirements
+- **Unit Tests:** Minimum 70% code coverage
+- **Integration Tests:** E2E testing for critical workflows
+- **Performance Tests:** Latency validation for real-time requirements
+- **Security Tests:** RBAC, container scanning, network policies
 
-### Local Development Setup
-```
-# Full development environment startup
-make dev-setup          # Initialize development environment
-make install-deps       # Install all dependencies (Go modules, npm packages)
-make generate-proto     # Generate protobuf files for E2 interface
-make build-dev          # Build development versions of all components
+### Deployment Considerations
+- **Environment Setup:** Kubernetes cluster with RBAC
+- **Dependencies:** Node.js 16.14.2+, Go 1.17+, Angular CLI
+- **Build Process:** Make-based build system
+- **Containerization:** Docker with multi-architecture support
 
-# Component-specific development
-make dashboard-dev      # Start dashboard development server (localhost:4200)
-make xapp-dashboard-dev # Start xApp dashboard development server (localhost:4201)
-make ric-server-dev     # Start RIC backend server (localhost:8080)
-```
+## AI Assistant Instructions
 
-### Build Commands
-```
-# Production builds
-make build              # Build all components for production
-make build-go           # Build Go backend services only
-make build-angular      # Build Angular frontends only
-make build-docker       # Build Docker images for all services
+When working on this project, please:
 
-# Clean builds
-make clean              # Clean all build artifacts
-make clean-go           # Clean Go build cache
-make clean-node         # Clean node_modules and package locks
-```
+### 1. Maintain O-RAN Compliance
+- Ensure all changes align with O-RAN Alliance specifications
+- Preserve E2, A1, and O1 interface compatibility
+- Maintain near real-time performance characteristics
 
-### Testing Commands
-```
-# Comprehensive testing
-make test               # Run all tests (unit, integration, e2e)
-make test-go            # Run Go tests with coverage
-make test-angular       # Run Angular unit tests (Jest)
-make test-e2e           # Run end-to-end tests (Cypress)
-make test-integration   # Run integration tests with mock RAN
+### 2. Follow Telecommunications Standards  
+- Use appropriate telecommunications terminology
+- Implement proper error handling for network failures
+- Consider multi-vendor interoperability requirements
 
-# Coverage requirements
-make coverage           # Generate test coverage reports (minimum 85%)
-make coverage-report    # Generate HTML coverage reports
-```
+### 3. Code Quality Standards
+- Maintain existing code architecture patterns
+- Add comprehensive logging for troubleshooting
+- Include proper documentation for complex algorithms
+- Validate input parameters for telecommunications protocols
 
-### Quality Assurance
-```
-# Code quality checks
-make lint               # Run all linters
-make lint-go            # Run Go linters (golangci-lint)
-make lint-ts            # Run TypeScript/Angular linters (ESLint)
-make format             # Auto-format all code
-make security-scan      # Run security vulnerability scans
-```
+### 4. Security Considerations
+- Implement proper RBAC controls
+- Validate all external API inputs
+- Use secure communication channels
+- Follow container security best practices
 
-## Architecture & Design Patterns
+### 5. Performance Requirements
+- Optimize for low-latency operations (10ms-1s)
+- Consider memory usage for embedded environments  
+- Implement efficient data structures for real-time processing
+- Cache frequently accessed telecommunications data
 
-### O-RAN Component Architecture
-```
-Near-RT RIC Platform
-├── A1 Interface (Policy Management)
-├── E2 Interface (RAN Communication)
-├── xApp Framework (Application Hosting)
-├── RMR (Message Routing)
-├── SDL (Shared Data Layer)
-└── Dashboard Interface (Management UI)
-```
-
-### Code Organization Patterns
-- **Go Services**: Follow clean architecture with handlers, services, repositories
-- **Angular Apps**: Feature-based modules with lazy loading
-- **xApp Development**: Standard xApp template with E2 subscription management
-- **API Design**: RESTful APIs with OpenAPI 3.0 specifications
-- **Configuration**: Environment-based config with validation
-
-### Key Interfaces to Implement
-```
-// E2 Interface for RAN communication
-type E2Interface interface {
-    Subscribe(ctx context.Context, req *E2SubscriptionRequest) error
-    Unsubscribe(ctx context.Context, subID string) error
-    SendControlMessage(ctx context.Context, msg *E2ControlMessage) error
-}
-
-// A1 Interface for policy management
-type A1Interface interface {
-    CreatePolicy(ctx context.Context, policy *A1Policy) error
-    UpdatePolicy(ctx context.Context, policyID string, policy *A1Policy) error
-    DeletePolicy(ctx context.Context, policyID string) error
-}
-```
-
-## Testing Strategy & Requirements
-
-### Test Coverage Requirements
-- **Go Backend**: Minimum 90% coverage for critical RIC functions
-- **Angular Frontend**: Minimum 85% coverage for components and services
-- **Integration Tests**: Cover all O-RAN interface protocols
-- **E2E Tests**: Simulate complete xApp lifecycle scenarios
-
-### Test Categories
-```
-# Unit Tests
-go test ./... -v -race -coverprofile=coverage.out
-npm run test -- --coverage --watchAll=false
-
-# Integration Tests (with mock RAN simulator)
-make test-e2-integration    # Test E2 interface with simulated nodes
-make test-a1-integration    # Test A1 interface with policy scenarios
-make test-xapp-lifecycle    # Test complete xApp deployment/management
-
-# Performance Tests
-make test-latency          # Verify 10ms-1s control loop requirements
-make test-throughput       # Test concurrent xApp message handling
-make test-stress           # Stress test with multiple E2 nodes
-```
-
-### Mock Configurations
-- Use RAN simulators for E2 interface testing
-- Mock federated learning endpoints for ML testing
-- Simulate network slice scenarios for slicing tests
-- Test with multi-vendor E2 service models
-
-## Security & Compliance
-
-### O-RAN Security Requirements
-- **Authentication**: Implement O-RAN compliant authentication mechanisms
-- **TLS Configuration**: Use TLS 1.3 for all external communications
-- **Certificate Management**: Proper cert rotation for E2 and A1 interfaces
-- **Data Protection**: Encrypt sensitive RAN data and UE information
-- **Access Control**: Role-based access for different operator personas
-
-### Security Scanning & Validation
-```
-make security-full-scan    # Complete security vulnerability assessment
-make compliance-check      # Verify O-RAN Alliance compliance
-make secret-scan          # Check for exposed credentials/secrets
-make container-scan       # Scan Docker images for vulnerabilities
-```
-
-## Deployment & Operations
-
-### Container & Kubernetes Configuration
-```
-# Local deployment
-make deploy-local         # Deploy to local Kubernetes cluster
-make deploy-minikube     # Deploy to minikube for development
-
-# Production deployment
-make deploy-prod         # Deploy production-ready configuration
-make deploy-ha           # Deploy high-availability configuration
-make deploy-monitoring   # Deploy Prometheus/Grafana monitoring stack
-```
-
-### Environment Management
-- **Development**: Single-node deployment with mock RAN
-- **Testing**: Multi-node deployment with RAN simulators
-- **Production**: HA deployment with real RAN integration
-- **Configuration**: Use Helm charts for environment-specific configs
-
-### Monitoring & Observability
-```
-# Monitoring setup
-make setup-monitoring     # Deploy Prometheus, Grafana, Jaeger
-make setup-logging       # Deploy ELK stack for centralized logging
-make setup-alerting      # Configure alerting rules for O-RAN KPIs
-```
-
-## Federated Learning & AI/ML Integration
-
-### ML Model Management
-- Use TensorFlow Serving or TorchServe for model deployment
-- Implement model versioning and A/B testing capabilities
-- Support distributed training across multiple xApps
-- Ensure privacy-preserving aggregation algorithms
-
-### Data Pipeline Requirements
-```
-make ml-pipeline-setup   # Setup ML training and inference pipelines
-make fl-test            # Test federated learning aggregation
-make model-validate     # Validate ML model accuracy and performance
-```
-
-## Documentation & PR Standards
-
-### Required Documentation Updates
-When modifying code, ALWAYS update:
-- API documentation (OpenAPI specs in `/docs/api/`)
-- Architecture diagrams (Mermaid/PlantUML in `/docs/architecture/`)
-- O-RAN compliance matrices (in `/docs/compliance/`)
-- Security assessment reports (in `/docs/security/`)
-
-### Pull Request Requirements
-```
-# PR Template (required sections)
-## Summary
-Brief description of changes and motivation
-
-## O-RAN Compliance Impact
-- [ ] No impact on O-RAN compliance
-- [ ] Requires compliance review
-- [ ] Updates compliance documentation
-
-## Testing Completed
-- [ ] Unit tests pass (90%+ coverage)
-- [ ] Integration tests with RAN simulator
-- [ ] Performance tests within SLA
-- [ ] Security scan completed
-
-## Deployment Impact
-- [ ] No deployment changes required
-- [ ] Requires configuration updates
-- [ ] Requires database migration
-- [ ] Affects multiple components
-```
+## Pull Request Guidelines
 
 ### Commit Message Format
 ```
-<type>(<scope>): <subject>
+<component>: <type>: <description>
 
-[optional body]
+[optional body explaining the change]
 
-[optional footer(s)]
-
-Examples:
-feat(e2): add support for E2SM-RC service model
-fix(dashboard): resolve xApp registration timeout issue
-docs(api): update E2 interface OpenAPI specification
+Component: dashboard|xapp-dashboard|deployment|docs
+Type: feat|fix|perf|refactor|docs|test|ci
 ```
 
-## Performance & Scalability Requirements
-
-### Latency Requirements
-- **E2 Control Messages**: < 10ms processing time
-- **A1 Policy Updates**: < 100ms propagation time
-- **Dashboard Response**: < 200ms for UI interactions
-- **xApp Registration**: < 1s complete lifecycle
-
-### Throughput Requirements
-- Support 1000+ concurrent E2 subscriptions
-- Handle 10,000+ E2 indications per second
-- Manage 100+ simultaneous xApp instances
-- Process federated learning updates from 50+ participants
-
-### Resource Management
+### Example Commit Messages
 ```
-# Performance monitoring
-make perf-monitor        # Monitor system performance metrics
-make latency-test       # Measure control loop latency
-make throughput-test    # Measure message processing throughput
-make resource-usage     # Monitor CPU/memory usage patterns
+dashboard: feat: add E2 interface monitoring dashboard
+xapp-dashboard: fix: resolve xApp lifecycle state synchronization  
+deployment: perf: optimize Kubernetes resource allocation
+docs: docs: update O-RAN architecture documentation
 ```
 
-## Environment Variables & Configuration
+### PR Description Template
+```markdown
+## Changes Made
+- Brief description of changes
 
-### Required Environment Variables
-```
-# RIC Platform Configuration
-export RIC_PLATFORM_NAMESPACE="ricplt"
-export RIC_XAPP_NAMESPACE="ricxapp"
-export RIC_INFRA_NAMESPACE="ricinfra"
+## O-RAN Impact Assessment  
+- Interface compatibility: [E2/A1/O1]
+- Performance impact: [latency/throughput]
+- Standards compliance: [O-RAN Alliance specs]
 
-# E2 Interface Configuration
-export E2_TERM_HOST="e2term-service"
-export E2_TERM_PORT="38000"
-export E2_SUB_HOST="subscription-service"
-export E2_SUB_PORT="8088"
+## Testing Performed
+- [ ] Unit tests pass
+- [ ] Integration tests with RAN simulators
+- [ ] Performance validation (latency < 1s)
+- [ ] Security scan completed
 
-# A1 Interface Configuration
-export A1_MEDIATOR_HOST="a1mediator-service"
-export A1_MEDIATOR_PORT="10000"
-
-# Database Configuration
-export RIC_DB_HOST="postgresql-service"
-export RIC_DB_PORT="5432"
-export RIC_DB_NAME="ricplt"
-
-# Security Configuration
-export TLS_CERT_PATH="/opt/ric/certs"
-export JWT_SECRET_KEY="your-jwt-secret"
-export ENCRYPTION_KEY="your-encryption-key"
+## Deployment Notes
+- Configuration changes required: [Y/N]  
+- Breaking changes: [Y/N]
+- Migration steps: [if applicable]
 ```
 
-### Configuration Validation
-```
-make validate-config    # Validate all configuration files
-make check-env         # Check required environment variables
-make test-connectivity # Test connectivity to external services
-```
+## Environment Setup Scripts
 
-## Troubleshooting & Debugging
+### Prerequisites Installation
+```bash
+# Node.js and npm
+curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+sudo apt-get install -y nodejs
 
-### Common Issues & Solutions
-```
-# E2 Interface Issues
-make debug-e2          # Debug E2 connection and subscription issues
-make test-e2-sim       # Test with E2 RAN simulator
+# Go installation  
+wget https://golang.org/dl/go1.17.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.17.linux-amd64.tar.gz
+export PATH=$PATH:/usr/local/go/bin
 
-# xApp Management Issues
-make debug-xapp        # Debug xApp registration and lifecycle
-make logs-xapp         # Collect xApp logs for analysis
+# Angular CLI
+npm install -g @angular/cli@13.3.3
 
-# Performance Issues
-make profile-cpu       # CPU profiling for Go services
-make profile-memory    # Memory profiling for Go services
-make trace-requests    # Distributed tracing for request flows
+# Docker and Kubernetes tools
+sudo apt-get install docker.io kubectl helm
 ```
 
-### Log Collection & Analysis
+### Build Commands
+```bash
+# Dashboard build
+cd dashboard-master/dashboard-master
+make build
+
+# xApp Dashboard build  
+cd xAPP_dashboard-master
+npm install
+npm run build
+
+# Run tests
+make test        # Dashboard tests
+npm run test     # Angular tests
 ```
-make collect-logs      # Collect logs from all components
-make analyze-logs      # Analyze logs for errors and patterns
-make export-metrics    # Export metrics for external analysis
-```
 
-## Final Notes for AI Agents
+## Troubleshooting Common Issues
 
-### Critical Success Factors
-1. **O-RAN Compliance**: Always verify changes maintain O-RAN Alliance specification compliance
-2. **Latency Requirements**: Ensure all changes respect near-real-time performance requirements
-3. **Security First**: Never compromise on security, especially for RAN data handling
-4. **Multi-vendor Support**: Test changes across different vendor implementations
-5. **Production Readiness**: All code must be production-ready with proper error handling
+### Build Issues
+- Ensure Node.js version >= 16.14.2
+- Clear npm cache: `npm cache clean --force`
+- Update dependencies: `npm update`
 
-### When Modifying This Project
-- Read and understand O-RAN specifications before making architectural changes
-- Test with RAN simulators before proposing changes to E2/A1 interfaces
-- Validate federated learning implementations with privacy-preserving requirements
-- Ensure all changes support multi-vendor interoperability
-- Document any new O-RAN features or capabilities added
+### Runtime Issues  
+- Check Kubernetes cluster status
+- Verify RBAC permissions
+- Monitor resource utilization
+- Check network connectivity to RAN nodes
 
-### Communication Protocols
-- Follow O-RAN defined message formats for E2 and A1 interfaces
-- Implement proper ASN.1 encoding/decoding for E2 messages
-- Use standard RMR messaging patterns for xApp communication
-- Maintain backward compatibility with existing xApp implementations
+### Performance Issues
+- Profile CPU and memory usage
+- Optimize database queries
+- Check network latency to E2 nodes
+- Validate real-time scheduling
 
-This configuration ensures that AI agents working on this Near-RT RIC platform understand the complex O-RAN ecosystem requirements and can generate code that meets telecommunications industry standards while maintaining the intelligent features of federated learning and network slicing.
+---
+
+This configuration ensures that AI assistants understand the complex O-RAN telecommunications domain while maintaining code quality and operational requirements for mission-critical network infrastructure.
