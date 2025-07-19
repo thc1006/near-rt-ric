@@ -60,15 +60,15 @@ func (self NodeCell) GetResourceSelector() *metricapi.ResourceSelector {
 	}
 }
 
-func toCells(std []v1.Node) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []v1.Node) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = NodeCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []v1.Node {
+func fromCells(cells []dataselect.DataCell[string]) []v1.Node {
 	std := make([]v1.Node, len(cells))
 	for i := range std {
 		std[i] = v1.Node(cells[i].(NodeCell))

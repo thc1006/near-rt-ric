@@ -40,6 +40,7 @@ type ClusterRole struct {
 
 func GetClusterRoleList(client kubernetes.Interface, dsQuery *dataselect.DataSelectQuery) (*ClusterRoleList, error) {
 	log.Println("Getting list of RBAC roles")
+
 	channels := &common.ResourceChannels{
 		ClusterRoleList: common.GetClusterRoleListChannel(client, 1),
 	}

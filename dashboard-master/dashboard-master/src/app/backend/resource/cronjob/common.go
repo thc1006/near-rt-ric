@@ -49,15 +49,15 @@ func (self CronJobCell) GetResourceSelector() *metricapi.ResourceSelector {
 	}
 }
 
-func ToCells(std []batchv1beta1.CronJob) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func ToCells(std []batchv1beta1.CronJob) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = CronJobCell(std[i])
 	}
 	return cells
 }
 
-func FromCells(cells []dataselect.DataCell) []batchv1beta1.CronJob {
+func FromCells(cells []dataselect.DataCell[string]) []batchv1beta1.CronJob {
 	std := make([]batchv1beta1.CronJob, len(cells))
 	for i := range std {
 		std[i] = batchv1beta1.CronJob(cells[i].(CronJobCell))

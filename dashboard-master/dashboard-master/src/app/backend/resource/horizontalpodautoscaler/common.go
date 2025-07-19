@@ -43,15 +43,15 @@ func (self HorizontalPodAutoscalerCell) GetProperty(name dataselect.PropertyName
 	}
 }
 
-func toCells(std []autoscaling.HorizontalPodAutoscaler) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []autoscaling.HorizontalPodAutoscaler) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = HorizontalPodAutoscalerCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []autoscaling.HorizontalPodAutoscaler {
+func fromCells(cells []dataselect.DataCell[string]) []autoscaling.HorizontalPodAutoscaler {
 	std := make([]autoscaling.HorizontalPodAutoscaler, len(cells))
 	for i := range std {
 		std[i] = autoscaling.HorizontalPodAutoscaler(cells[i].(HorizontalPodAutoscalerCell))

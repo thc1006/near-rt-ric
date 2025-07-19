@@ -37,15 +37,15 @@ func (self IngressClassCell) GetProperty(name dataselect.PropertyName) dataselec
 	}
 }
 
-func toCells(std []networkingv1.IngressClass) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []networkingv1.IngressClass) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = IngressClassCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []networkingv1.IngressClass {
+func fromCells(cells []dataselect.DataCell[string]) []networkingv1.IngressClass {
 	std := make([]networkingv1.IngressClass, len(cells))
 	for i := range std {
 		std[i] = networkingv1.IngressClass(cells[i].(IngressClassCell))

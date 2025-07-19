@@ -36,15 +36,15 @@ func (self ClusterRoleBindingCell) GetProperty(name dataselect.PropertyName) dat
 	}
 }
 
-func toCells(std []ClusterRoleBinding) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []ClusterRoleBinding) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = ClusterRoleBindingCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []ClusterRoleBinding {
+func fromCells(cells []dataselect.DataCell[string]) []ClusterRoleBinding {
 	std := make([]ClusterRoleBinding, len(cells))
 	for i := range std {
 		std[i] = ClusterRoleBinding(cells[i].(ClusterRoleBindingCell))

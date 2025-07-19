@@ -101,15 +101,15 @@ func (self PersistentVolumeClaimCell) GetProperty(name dataselect.PropertyName) 
 	}
 }
 
-func toCells(std []api.PersistentVolumeClaim) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []api.PersistentVolumeClaim) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = PersistentVolumeClaimCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []api.PersistentVolumeClaim {
+func fromCells(cells []dataselect.DataCell[string]) []api.PersistentVolumeClaim {
 	std := make([]api.PersistentVolumeClaim, len(cells))
 	for i := range std {
 		std[i] = api.PersistentVolumeClaim(cells[i].(PersistentVolumeClaimCell))

@@ -36,15 +36,15 @@ func (self RoleBindingCell) GetProperty(name dataselect.PropertyName) dataselect
 	}
 }
 
-func toCells(std []RoleBinding) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []RoleBinding) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = RoleBindingCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []RoleBinding {
+func fromCells(cells []dataselect.DataCell[string]) []RoleBinding {
 	std := make([]RoleBinding, len(cells))
 	for i := range std {
 		std[i] = RoleBinding(cells[i].(RoleBindingCell))

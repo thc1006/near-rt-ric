@@ -100,15 +100,15 @@ func toPlugin(plugin v1alpha1.Plugin) Plugin {
 	}
 }
 
-func toCells(std []v1alpha1.Plugin) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []v1alpha1.Plugin) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = PluginCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []v1alpha1.Plugin {
+func fromCells(cells []dataselect.DataCell[string]) []v1alpha1.Plugin {
 	std := make([]v1alpha1.Plugin, len(cells))
 	for i := range std {
 		std[i] = v1alpha1.Plugin(cells[i].(PluginCell))

@@ -89,15 +89,15 @@ func (self DaemonSetCell) GetResourceSelector() *metricapi.ResourceSelector {
 	}
 }
 
-func ToCells(std []apps.DaemonSet) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func ToCells(std []apps.DaemonSet) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = DaemonSetCell(std[i])
 	}
 	return cells
 }
 
-func FromCells(cells []dataselect.DataCell) []apps.DaemonSet {
+func FromCells(cells []dataselect.DataCell[string]) []apps.DaemonSet {
 	std := make([]apps.DaemonSet, len(cells))
 	for i := range std {
 		std[i] = apps.DaemonSet(cells[i].(DaemonSetCell))

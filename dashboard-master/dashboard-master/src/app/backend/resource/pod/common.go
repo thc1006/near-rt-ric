@@ -201,15 +201,15 @@ func (self PodCell) GetResourceSelector() *metricapi.ResourceSelector {
 	}
 }
 
-func toCells(std []v1.Pod) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []v1.Pod) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = PodCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []v1.Pod {
+func fromCells(cells []dataselect.DataCell[string]) []v1.Pod {
 	std := make([]v1.Pod, len(cells))
 	for i := range std {
 		std[i] = v1.Pod(cells[i].(PodCell))

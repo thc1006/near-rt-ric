@@ -92,17 +92,17 @@ func (self PersistentVolumeCell) GetProperty(name dataselect.PropertyName) datas
 	}
 }
 
-// toCells converts []api.PersistentVolume to []dataselect.DataCell.
-func toCells(std []v1.PersistentVolume) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+// toCells converts []api.PersistentVolume to []dataselect.DataCell[string].
+func toCells(std []v1.PersistentVolume) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = PersistentVolumeCell(std[i])
 	}
 	return cells
 }
 
-// fromCells converts cells []dataselect.DataCell to []api.PersistentVolume.
-func fromCells(cells []dataselect.DataCell) []v1.PersistentVolume {
+// fromCells converts cells []dataselect.DataCell[string] to []api.PersistentVolume.
+func fromCells(cells []dataselect.DataCell[string]) []v1.PersistentVolume {
 	std := make([]v1.PersistentVolume, len(cells))
 	for i := range std {
 		std[i] = v1.PersistentVolume(cells[i].(PersistentVolumeCell))

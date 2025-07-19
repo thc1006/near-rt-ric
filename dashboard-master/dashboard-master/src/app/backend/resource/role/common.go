@@ -36,15 +36,15 @@ func (self RoleCell) GetProperty(name dataselect.PropertyName) dataselect.Compar
 	}
 }
 
-func toCells(std []Role) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []Role) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = RoleCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []Role {
+func fromCells(cells []dataselect.DataCell[string]) []Role {
 	std := make([]Role, len(cells))
 	for i := range std {
 		std[i] = Role(cells[i].(RoleCell))

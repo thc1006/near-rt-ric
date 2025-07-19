@@ -210,7 +210,7 @@ func (self *secretSynchronizer) handleEvent(event watch.Event) error {
 		self.secret = nil
 		self.mux.Unlock()
 	case watch.Error:
-		return errors.NewUnexpectedObject(event.Object)
+		return errors.NewUnexpectedObject(fmt.Sprintf("%#v", event.Object))
 	}
 
 	return nil

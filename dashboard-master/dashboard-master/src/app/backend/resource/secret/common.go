@@ -37,15 +37,15 @@ func (self SecretCell) GetProperty(name dataselect.PropertyName) dataselect.Comp
 	}
 }
 
-func toCells(std []api.Secret) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []api.Secret) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = SecretCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []api.Secret {
+func fromCells(cells []dataselect.DataCell[string]) []api.Secret {
 	std := make([]api.Secret, len(cells))
 	for i := range std {
 		std[i] = api.Secret(cells[i].(SecretCell))

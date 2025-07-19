@@ -17,7 +17,6 @@ package settings
 import (
 	"context"
 	"log"
-	"net/http"
 	"reflect"
 	"sync"
 
@@ -161,7 +160,7 @@ func (sm *SettingsManager) SavePinnedResource(client kubernetes.Interface, r *ap
 	}
 
 	if exists {
-		return errors.NewGenericResponse(http.StatusConflict, api.ResourceAlreadyPinnedError)
+		return errors.NewGenericResponse(api.ResourceAlreadyPinnedError)
 	}
 
 	defer sm.load(client)

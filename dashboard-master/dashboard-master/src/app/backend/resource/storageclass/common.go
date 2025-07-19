@@ -37,15 +37,15 @@ func (self StorageClassCell) GetProperty(name dataselect.PropertyName) dataselec
 	}
 }
 
-func toCells(std []storage.StorageClass) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []storage.StorageClass) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = StorageClassCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []storage.StorageClass {
+func fromCells(cells []dataselect.DataCell[string]) []storage.StorageClass {
 	std := make([]storage.StorageClass, len(cells))
 	for i := range std {
 		std[i] = storage.StorageClass(cells[i].(StorageClassCell))

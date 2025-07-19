@@ -62,15 +62,15 @@ func (self NamespaceCell) GetProperty(name dataselect.PropertyName) dataselect.C
 	}
 }
 
-func toCells(std []api.Namespace) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []api.Namespace) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = NamespaceCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []api.Namespace {
+func fromCells(cells []dataselect.DataCell[string]) []api.Namespace {
 	std := make([]api.Namespace, len(cells))
 	for i := range std {
 		std[i] = api.Namespace(cells[i].(NamespaceCell))

@@ -51,15 +51,15 @@ func (self StatefulSetCell) GetResourceSelector() *metricapi.ResourceSelector {
 	}
 }
 
-func toCells(std []apps.StatefulSet) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []apps.StatefulSet) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = StatefulSetCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []apps.StatefulSet {
+func fromCells(cells []dataselect.DataCell[string]) []apps.StatefulSet {
 	std := make([]apps.StatefulSet, len(cells))
 	for i := range std {
 		std[i] = apps.StatefulSet(cells[i].(StatefulSetCell))

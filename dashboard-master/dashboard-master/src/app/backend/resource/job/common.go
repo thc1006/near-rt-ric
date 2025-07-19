@@ -50,15 +50,15 @@ func (self JobCell) GetResourceSelector() *metricapi.ResourceSelector {
 	}
 }
 
-func ToCells(std []batch.Job) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func ToCells(std []batch.Job) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = JobCell(std[i])
 	}
 	return cells
 }
 
-func FromCells(cells []dataselect.DataCell) []batch.Job {
+func FromCells(cells []dataselect.DataCell[string]) []batch.Job {
 	std := make([]batch.Job, len(cells))
 	for i := range std {
 		std[i] = batch.Job(cells[i].(JobCell))

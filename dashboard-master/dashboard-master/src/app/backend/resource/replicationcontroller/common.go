@@ -113,15 +113,15 @@ func (self ReplicationControllerCell) GetResourceSelector() *metricapi.ResourceS
 	}
 }
 
-func toCells(std []v1.ReplicationController) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []v1.ReplicationController) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = ReplicationControllerCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []v1.ReplicationController {
+func fromCells(cells []dataselect.DataCell[string]) []v1.ReplicationController {
 	std := make([]v1.ReplicationController, len(cells))
 	for i := range std {
 		std[i] = v1.ReplicationController(cells[i].(ReplicationControllerCell))

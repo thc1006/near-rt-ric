@@ -53,15 +53,15 @@ func (self DeploymentCell) GetResourceSelector() *metricapi.ResourceSelector {
 	}
 }
 
-func toCells(std []apps.Deployment) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []apps.Deployment) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = DeploymentCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []apps.Deployment {
+func fromCells(cells []dataselect.DataCell[string]) []apps.Deployment {
 	std := make([]apps.Deployment, len(cells))
 	for i := range std {
 		std[i] = apps.Deployment(cells[i].(DeploymentCell))

@@ -15,7 +15,7 @@
 package validation
 
 import (
-	"github.com/docker/distribution/reference"
+	distributionref "github.com/distribution/reference"
 )
 
 // ImageReferenceValiditySpec is a specification of an image reference validation request.
@@ -35,9 +35,20 @@ type ImageReferenceValidity struct {
 // ValidateImageReference validates image reference.
 func ValidateImageReference(spec *ImageReferenceValiditySpec) (*ImageReferenceValidity, error) {
 	s := spec.Reference
-	_, err := reference.Parse(s)
+	ref, err := distributionref.ParseNormalizedNamed(s)
 	if err != nil {
 		return &ImageReferenceValidity{Valid: false, Reason: err.Error()}, nil
 	}
+
+	// Check if the reference has a domain, otherwise it's not a valid image reference.
+	if distributionref.Domain(ref) == "" {
+		return &ImageReferenceValidity{Valid: false, Reason: "Image reference must contain a domain"}, nil
+	}
+
+	// Check if the reference has a path, otherwise it's not a valid image reference.
+	if distributionref.Path(ref) == "" {
+		return &ImageReferenceValidity{Valid: false, Reason: "Image reference must contain a path"}, nil
+	}
+
 	return &ImageReferenceValidity{Valid: true}, nil
 }

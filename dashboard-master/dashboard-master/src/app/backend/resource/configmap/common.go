@@ -37,15 +37,15 @@ func (self ConfigMapCell) GetProperty(name dataselect.PropertyName) dataselect.C
 	}
 }
 
-func toCells(std []api.ConfigMap) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func toCells(std []api.ConfigMap) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = ConfigMapCell(std[i])
 	}
 	return cells
 }
 
-func fromCells(cells []dataselect.DataCell) []api.ConfigMap {
+func fromCells(cells []dataselect.DataCell[string]) []api.ConfigMap {
 	std := make([]api.ConfigMap, len(cells))
 	for i := range std {
 		std[i] = api.ConfigMap(cells[i].(ConfigMapCell))

@@ -51,15 +51,15 @@ func (self ReplicaSetCell) GetResourceSelector() *metricapi.ResourceSelector {
 	}
 }
 
-func ToCells(std []apps.ReplicaSet) []dataselect.DataCell {
-	cells := make([]dataselect.DataCell, len(std))
+func ToCells(std []apps.ReplicaSet) []dataselect.DataCell[string] {
+	cells := make([]dataselect.DataCell[string], len(std))
 	for i := range std {
 		cells[i] = ReplicaSetCell(std[i])
 	}
 	return cells
 }
 
-func FromCells(cells []dataselect.DataCell) []apps.ReplicaSet {
+func FromCells(cells []dataselect.DataCell[string]) []apps.ReplicaSet {
 	std := make([]apps.ReplicaSet, len(cells))
 	for i := range std {
 		std[i] = apps.ReplicaSet(cells[i].(ReplicaSetCell))
